@@ -1,97 +1,45 @@
 <template>
 <div class="cinema_body">
     <ul>
-        <li>
+        <li v-for="item in cinemasList" :key="item.cinemaId">
             <div>
-                <span>大地影院(澳东世纪店)</span>
-                <span class="q"><span class="price">22.9</span> 元起</span>
+                <span>{{item.name}}</span>
+                <span class="q"><span class="price">{{item.lowPrice | price}}</span> 元起</span>
             </div>
             <div class="address">
-                <span>金州区大连经济技术开发区澳东世纪3层</span>
-                <span>1763.5km</span>
+                <div id="address"><span >{{item.address}}</span></div>
+                <span>{{item.Distance|distance}}km</span>
             </div>
-            <div class="card">
+            <!-- <div class="card">
                 <div>小吃</div>
                 <div>折扣卡</div>
-            </div>
+            </div> -->
         </li>
-        <li>
-            <div>
-                <span>大地影院(澳东世纪店)</span>
-                <span class="q"><span class="price">22.9</span> 元起</span>
-            </div>
-            <div class="address">
-                <span>金州区大连经济技术开发区澳东世纪3层</span>
-                <span>1763.5km</span>
-            </div>
-            <div class="card">
-                <div>小吃</div>
-                <div>折扣卡</div>
-            </div>
-        </li>
-        <li>
-            <div>
-                <span>大地影院(澳东世纪店)</span>
-                <span class="q"><span class="price">22.9</span> 元起</span>
-            </div>
-            <div class="address">
-                <span>金州区大连经济技术开发区澳东世纪3层</span>
-                <span>1763.5km</span>
-            </div>
-            <div class="card">
-                <div>小吃</div>
-                <div>折扣卡</div>
-            </div>
-        </li>
-        <li>
-            <div>
-                <span>大地影院(澳东世纪店)</span>
-                <span class="q"><span class="price">22.9</span> 元起</span>
-            </div>
-            <div class="address">
-                <span>金州区大连经济技术开发区澳东世纪3层</span>
-                <span>1763.5km</span>
-            </div>
-            <div class="card">
-                <div>小吃</div>
-                <div>折扣卡</div>
-            </div>
-        </li>
-        <li>
-            <div>
-                <span>大地影院(澳东世纪店)</span>
-                <span class="q"><span class="price">22.9</span> 元起</span>
-            </div>
-            <div class="address">
-                <span>金州区大连经济技术开发区澳东世纪3层</span>
-                <span>1763.5km</span>
-            </div>
-            <div class="card">
-                <div>小吃</div>
-                <div>折扣卡</div>
-            </div>
-        </li>
-        <li>
-            <div>
-                <span>大地影院(澳东世纪店)</span>
-                <span class="q"><span class="price">22.9</span> 元起</span>
-            </div>
-            <div class="address">
-                <span>金州区大连经济技术开发区澳东世纪3层</span>
-                <span>1763.5km</span>
-            </div>
-            <div class="card">
-                <div>小吃</div>
-                <div>折扣卡</div>
-            </div>
-        </li>
+        
     </ul>
 </div>
 </template>
 
 <script>
 export default {
-    name :'CiList'
+    name :'CiList',
+    data(){
+        return{
+            cinemasList:[],
+        }
+    },
+    mounted() {
+        this.axios({
+            url:'https://m.maizuo.com/gateway?cityId=360100&ticketFlag=1&k=1229623',
+            headers:{
+                'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"160041217029742648524801","bc":"360100"}',
+                'X-Host': 'mall.film-ticket.cinema.list'
+            }
+        }).then(res=>{
+            console.log(res.data);
+            this.cinemasList=res.data.data.cinemas;
+        })
+    },
 }
 </script>
 
@@ -104,6 +52,7 @@ export default {
 .cinema_body .price{ font-size: 18px;}
 .cinema_body .address{ font-size: 13px; color:#666;}
 .cinema_body .address span:nth-of-type(2){ float:right; }
+#address{ width: 265px; overflow:hidden;white-space: nowrap; text-overflow: ellipsis; display: inline-block;}
 .cinema_body .card{ display: flex;}
 .cinema_body .card div{ padding: 0 3px; height: 15px; line-height: 15px; border-radius: 2px; color: #f90; border: 1px solid #f90; font-size: 13px; margin-right: 5px;}
 .cinema_body .card div.or{ color: #f90; border: 1px solid #f90;}
