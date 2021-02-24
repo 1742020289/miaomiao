@@ -1,8 +1,9 @@
 <template>
-  <div class="movie_body">
-				<ul>
-					<li v-for="item in movieList" :key="item.id">
-						<div class="pic_show"><img :src="item.img | filter"></div>
+  <div class="movie_body" ref="movie_body">
+	  	<Loading v-if="isLoading"/>
+				<ul v-else>
+					<li v-for="item in movieList" :key="item.id" >
+						<div class="pic_show"><img :src="item.img | filter" @tap='handleToDetail'></div>
 						<div class="info_list">
 							<h2>{{item.nm}}<img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
 							<p v-if="item.sc">观众评分  <span class="grade">{{item.sc }}</span></p>
@@ -20,23 +21,54 @@
 </template>
 
 <script>
+import BScroll from 'better-scroll'
 export default {
 	name :'NowPlaying',
 	data(){
 		return{
 			movieList : [],
+			isLoading :true,
+			prevCity:-1,
 		}
 	},
-	mounted() {
+	activated() {
+		console.log('123')
+		var cityId=this.$store.state.city.id;
+		if(this.prevCity===cityId){return;}
+		this.isLoading=true;
 	this.axios.get('/ajax/movieOnInfoList?token=').then(res=>{
 		console.log(res.data);
 		var msg=res.statusText;
 		
 		if(msg==='OK'){
 			this.movieList=res.data.movieList;
+			this.isLoading=false;
+			this.prevCity=cityId;
+			this.$nextTick(()=>{
+			let bscroll=	new BScroll(this.$refs.movie_body,{
+					tap:true,
+					probeTybe:1,
+
+				});
+				bscroll.on('scroll',()=>{
+				console.log('333');
+
+			});
+			bscroll.on('touchEnd',()=>{
+
+			});
+			
+			})
 		}
 		
 	})
+	},
+	methods: {
+		handleToDetail(){
+			console.log('1111');
+			
+			
+		}
 	},
 }
 </script>

@@ -27,8 +27,11 @@ Vue.filter('price',(data)=>{
 });
 Vue.filter('distance',(data)=>{
   return Math.floor(data*100)/100;
-})
-
+});
+import Scroller from '@/components/Scroller'
+Vue.component('Scroller',Scroller);
+import Loading from '@/components/Loading'
+Vue.component('Loading',Loading);
 new Vue({
   router,
   store,
