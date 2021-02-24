@@ -1,10 +1,11 @@
 <template>
   <div class="city_body">
-        <div class="city_list">
+      <Loading v-if="isLoading"/>
+        <div v-else class="city_list">
             <div class="city_hot">
                 <h2>热门城市</h2>
                 <ul class="clearfix">
-                    <li v-for="item in hotList" :key="item.id">{{item.name}}</li>
+                    <li v-for="item in hotList" :key="item.id" @click='handleToCity(item.nm,item.id)'>{{item.nm}}</li>
                     
                 </ul>
             </div>
@@ -12,7 +13,7 @@
                 <div v-for="data in cityList" :key="data.index">
                     <h2>{{data.index}}</h2>
                     <ul>
-                        <li v-for="city in data.list" :key="city.id">{{city.nm}}</li>
+                        <li v-for="city in data.list" :key="city.id" @click='handleToCity(city.nm,city.id)'>{{city.nm}}</li>
                     </ul>
                 </div>
              </div>
@@ -20,7 +21,7 @@
         </div>
         <div class="city_index">
             <ul>
-                <li v-for="(city_index,index) in cityList" :key="city_index.index" @touchstart="handleToIndex(index)">{{city_index.index}}</li>
+                <li v-for="(city_index,index) in cityList" :key="city_index.index"  @tap='handleToCity(city_index.name,city_index.id)' @touchstart="handleToIndex(index)">{{city_index.index}}</li>
                 
             </ul>
         </div>
@@ -33,11 +34,19 @@ export default {
     data (){
         return {
             cityList :[],
-            hotList : []
+            hotList : [],
+            isLoading:true
         }
     },
     mounted () {
-    this.axios({
+        var cityList=window.localStorage.getItem('cityList');
+        var hotList=window.localStorage.getItem('hotList');
+        if (cityList&&hotList) {
+            this.cityList=JSON.parse(cityList);
+            this.hotList=JSON.parse(hotList);
+            this.isLoading=false;
+        } else {
+            this.axios({
       url: 'https://m.maizuo.com/gateway?k=4683283',
       headers: {
         'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"160041217029742648524801","bc":"110100"}',
@@ -51,20 +60,30 @@ export default {
           var {cityList,hotList} =this.formatCityList(cities);
           this.cityList=cityList;
           this.hotList=hotList;
-
+          this.isLoading=false;
+            window.localStorage.setItem('cityList',JSON.stringify(cityList));
+            window.localStorage.setItem('hotList',JSON.stringify(hotList));
 
       }
       
     })
+        }
+    
   },
   methods: {
+      handleToCity(name,id){
+          this.$store.commit('city/CITY_INFO',{name,id});
+          this.$router.push('/movie/nowPlaying')
+          window.localStorage.setItem('nowName',name);
+          window.localStorage.setItem('nowId',id);
+      },
       formatCityList(cities){
         var cityList = [];
         var hotList =[];
 
         for(var i=0;i<cities.length;i++){
             if(cities[i].isHot===1){
-                hotList.push(cities[i]);
+                hotList.push({ nm : cities[i].name, id : cities[i].cityId});
             }
         }
 

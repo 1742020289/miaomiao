@@ -1,6 +1,8 @@
 <template>
   <div class="movie_body">
-        <ul>
+      <Scroller>
+          <Loading v-if="isLoading"/>
+        <ul v-else>
             <li v-for="item in commingList" :key="item.id">
                     <div class="pic_show"><img :src="item.img | filter"></div>
                     <div class="info_list">
@@ -14,6 +16,7 @@
                     </div>
                 </li>
         </ul>
+      </Scroller>
     </div>
 </template>
 
@@ -23,6 +26,7 @@ export default {
     data(){
 		return{
 			commingList : [],
+            isLoading:true,
 		}
 	},
 	mounted() {
@@ -35,6 +39,7 @@ export default {
 		
 		if(msg==='OK'){
 			this.commingList=res.data.coming;
+            this.isLoading=false;
 			
 		}
 		
