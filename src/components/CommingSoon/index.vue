@@ -3,13 +3,13 @@
       <Scroller>
           <Loading v-if="isLoading"/>
         <ul v-else>
-            <li v-for="item in commingList" :key="item.id">
-                    <div class="pic_show"><img :src="item.img | filter"></div>
+            <li v-for="item in commingList" :key="item.filmId">
+                    <div class="pic_show"><img :src="item.poster" @touchstart="handleToDetail(item.filmId)"></div>
                     <div class="info_list">
-                        <h2>{{ item.nm }} <img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
-                        <p><span class="person">{{ item.wish }}</span> 人想看</p>
-                        <p>主演: {{ item.star }}</p>
-                        <p>{{ item.rt }}上映</p>
+                        <h2 @touchstart="handleToDetail(item.filmId)">{{ item.name }} <img v-if="item.item.type==2" src="@/assets/maxs.png" alt=""></h2>
+                        
+                        <p>主演: {{ item.actors|actorsfilter }}</p>
+                        <p>{{ item.premiereAt|timeFilter }}上映</p>
                     </div>
                     <div class="btn_pre">
                         预售
@@ -29,22 +29,34 @@ export default {
             isLoading:true,
 		}
 	},
+   methods:{
+    handleToDetail(id){
+      console.log(id);
+      this.$router.push('/movie/detail/2/'+id);
+    }
+  
+},
 	mounted() {
-	this.axios({
-      url: '/ajax/comingList?ci=83&token=',
-      
-    }).then(res=>{
+this.axios({
+        url: 'https://m.maizuo.com/gateway?cityId=110100&pageNum=1&pageSize=10&type=2&k=8977309',
+        headers: {
+          'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"160041217029742648524801","bc":"110100"}',
+          'X-Host': 'mall.film-ticket.film.list'
+        }
+      }).then(res=>{
 		console.log(res.data);
-		var msg=res.statusText;
 		
-		if(msg==='OK'){
-			this.commingList=res.data.coming;
+		
+	
+			this.commingList=res.data.data.films;
             this.isLoading=false;
 			
-		}
+		
 		
 	})
-	},
+	}
+  
+  
 }
 </script>
 
@@ -53,7 +65,7 @@ export default {
 .movie_body ul{ margin:0 12px; overflow: hidden;}
 .movie_body ul li{ margin-top:12px; display: flex; align-items:center; border-bottom: 1px #e6e6e6 solid; padding-bottom: 10px;}
 .movie_body .pic_show{ width:64px; height: 90px;}
-.movie_body .pic_show img{ width:100%;}
+.movie_body .pic_show img{ width:100%;height: 100%;}
 .movie_body .info_list { margin-left: 10px; flex:1; position: relative;}
 .movie_body .info_list h2{ font-size: 17px; line-height: 24px; width:150px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis;}
 .movie_body .info_list p{ font-size: 13px; color:#666; line-height: 22px; width:200px; overflow: hidden; white-space: nowrap; text-overflow:ellipsis;}

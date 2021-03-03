@@ -17,10 +17,10 @@ Vue.filter('filter',  (path)=> {
   return path.replace('w.h', '64.90')
 });
 Vue.filter('gradeFilter',(data)=>{
-  if(data===0){
-    return '暂无评分';
+  if(data){
+    return data;
   }
-  return data;
+  return '0.0';
 })
 Vue.filter('price',(data)=>{
   return data/100;
@@ -28,6 +28,10 @@ Vue.filter('price',(data)=>{
 Vue.filter('distance',(data)=>{
   return Math.floor(data*100)/100;
 });
+Vue.filter('timeFilter',(time)=>{
+  var date=new Date(time);
+  return date.toLocaleString();
+})
 import Scroller from '@/components/Scroller'
 Vue.component('Scroller',Scroller);
 import Loading from '@/components/Loading'

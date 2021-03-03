@@ -2,14 +2,15 @@
   <div class="movie_body" ref="movie_body">
 	  	<Loading v-if="isLoading"/>
 				<ul v-else>
-					<li v-for="item in movieList" :key="item.id" >
-						<div class="pic_show"><img :src="item.img | filter" @tap='handleToDetail'></div>
+					<li v-for="item in movieList" :key="item.filmId" >
+						<div class="pic_show"><img :src="item.poster " @click='handleToDetail(item.filmId)'></div>
 						<div class="info_list">
-							<h2>{{item.nm}}<img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
-							<p v-if="item.sc">观众评分  <span class="grade">{{item.sc }}</span></p>
-							<p v-if="!item.sc"><span class="person">{{ item.wish }}</span> 人想看</p>
-							<p>主演: {{item.star }}</p>
-							<p>{{item.showInfo}}</p>
+							<h2 @click='handleToDetail(item.filmId)'>{{item.name}}<img v-if="item.version" src="@/assets/maxs.png" alt=""></h2>
+							<p >观众评分： <span class="grade">{{item.grade |gradeFilter}}</span></p>
+						
+							<p>主演: {{item.actors | actorsfilter }}</p>
+							<p><span>{{item.nation}} </span>|<span> {{item.runtime}}分钟</span></p>
+							
 						</div>
 						<div class="btn_mall">
 							购票
@@ -32,41 +33,48 @@ export default {
 		}
 	},
 	activated() {
-		console.log('123')
+		
 		var cityId=this.$store.state.city.id;
 		if(this.prevCity===cityId){return;}
 		this.isLoading=true;
-	this.axios.get('/ajax/movieOnInfoList?token=').then(res=>{
-		console.log(res.data);
-		var msg=res.statusText;
+		this.axios({
+        url: `https://m.maizuo.com/gateway?cityId=110100&pageNum=1&pageSize=10&type=1&k=5725576`,
+        headers: {
+          'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"160041217029742648524801","bc":"110100"}',
+          'X-Host': 'mall.film-ticket.film.list'
+        }
+      }).then(res=>{
+		  console.log(res.data);
 		
-		if(msg==='OK'){
-			this.movieList=res.data.movieList;
+		
+		
+			this.movieList=res.data.data.films;
 			this.isLoading=false;
 			this.prevCity=cityId;
 			this.$nextTick(()=>{
-			let bscroll=	new BScroll(this.$refs.movie_body,{
-					tap:true,
-					probeTybe:1,
+			// let bscroll=	new BScroll(this.$refs.movie_body,{
+			// 		tap:true,
+			// 		probeTybe:1,
 
-				});
-				bscroll.on('scroll',()=>{
-				console.log('333');
+			// 	});
+			// 	bscroll.on('scroll',()=>{
+			// 	console.log('333');
 
-			});
-			bscroll.on('touchEnd',()=>{
+			// });
+			// bscroll.on('touchEnd',()=>{
 
-			});
+			// });
 			
 			})
-		}
-		
-	})
+
+
+	  })
+	
 	},
 	methods: {
-		handleToDetail(){
-			console.log('1111');
-			
+		handleToDetail(id){
+			console.log(id);
+			this.$router.push('/movie/detail/1/'+id);
 			
 		}
 	},
